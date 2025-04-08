@@ -17,7 +17,7 @@ provider "aws" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "my-key"
-  public_key = file("~/.ssh/keyforlab4.pem")  
+  public_key = file("~/.ssh/keyforlab4.pub")  
 }
 
 resource "aws_security_group" "web_sg" {
@@ -40,7 +40,7 @@ resource "aws_security_group" "web_sg" {
 }
 
 resource "aws_instance" "web_server" {
-  ami           = "ami-028f6d7ddc3079baf" 
+  ami           = "ami-0b0ea68c435eb488d" 
   instance_type = "t2.micro"
   key_name      = aws_key_pair.deployer.key_name
   security_groups = [aws_security_group.web_sg.name]
@@ -48,4 +48,9 @@ resource "aws_instance" "web_server" {
   tags = {
     Name = "WebApp"
   }
+}
+
+output "instance_ip" {
+  description = "Public IP of the EC2 instance"
+  value       = aws_instance.web_server.public_ip
 }

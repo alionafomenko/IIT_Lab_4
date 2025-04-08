@@ -44,6 +44,18 @@ resource "aws_instance" "web_server" {
   instance_type = "t2.micro"
   key_name      = aws_key_pair.deployer.key_name
   security_groups = [aws_security_group.web_sg.name]
+   
+  user_data = <<-EOF
+              #!/bin/bash
+              # Установка Docker
+              sudo apt update
+              sudo apt install -y docker.io
+              sudo systemctl enable --now docker
+              sudo systemctl start docker
+              sudo usermod -aG docker ubuntu
+              docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 30 
+              docker run -d -p 80:80 --name myapp alionafomenko/iit_lab_4 
+              EOF  
 
   tags = {
     Name = "WebApp"
